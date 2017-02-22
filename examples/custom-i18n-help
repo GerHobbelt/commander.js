@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('../');
+
+console.log(program.locale);
+
+program
+  .locale("es")
+  .version('0.0.1')
+  .option('-f, --foo', 'activar foo')
+  .option('-b, --bar', 'activar bar')
+  .option('-B, --baz', 'activar baz');
+
+// must be before .parse() since
+// node's emit() is immediate
+
+program.on('--help', function(){
+  console.log('  Ejemplos:');
+  console.log('');
+  console.log('    $ custom-help --help');
+  console.log('    $ custom-help -h');
+  console.log('');
+});
+
+program.parse(process.argv);
+
+program.help();
+

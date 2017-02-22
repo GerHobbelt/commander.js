@@ -10,6 +10,45 @@ var dirname = path.dirname;
 var basename = path.basename;
 var fs = require('fs');
 
+var i18nDefaultLocale = "en";
+var i18nMessages = {
+  en: {
+    "help.usage": "Usage",
+    "help.implicitHelp": "display help for [cmd]",
+    "help.version": "output the version number",
+    "help.usage.options": "[options]",
+    "help.usage.command": "[command]",
+    "help.usage.commandsSection": "Commands",
+    "help.usage.optionsSection": "Options",
+    "help.optionHelp": "output usage information",
+    "error.executeSubCommand.ENOENT": "\n  %s(1) does not exist, try --help\n",
+    "error.executeSubCommand.EACCES": "\n  %s(1) not executable. try chmod or run with root\n",
+    "error.missingArgument": "error: missing required argument '%s'",
+    "error.optionMissingArgumentFlag": "error: option `%s' argument missing, got `%s'",
+    "error.optionMissingArgument": "error: option `%s' argument missing",
+    "error.unknownOption": "error: unknown option '%s'",
+    "error.variadicArgNotLast": "error: variadic arguments must be last '%s'"
+  },
+  es: {
+    "help.usage": "Uso",
+    "help.implicitHelp": "muestra la ayuda para el comando [cmd]",
+    "help.version": "muestra el número de versión del comando",
+    "help.usage.options": "[opciones]",
+    "help.usage.command": "[comando]",
+    "help.usage.commandsSection": "Comandos",
+    "help.usage.optionsSection": "Opciones",
+    "help.optionHelp": "muestra información de uso",
+    "error.executeSubCommand.ENOENT": "\n  %s(1) no existe, inténtalo con --help\n",
+    "error.executeSubCommand.EACCES": "\n  %s(1) no es ejecutable. Intenta cambiar los permisos o ejecutar como superusuario\n",
+    "error.missingArgument": "error: argumento '%s' es obligatorio",
+    "error.optionMissingArgumentFlag": "error: falta el argumento para la opción '%s', se ha usdo '%s'",
+    "error.optionMissingArgument": "error: falta el argumento para la opción '%s'",
+    "error.unknownOption": "error: opción '%s' desconocida",
+    "error.variadicArgNotLast": "error: el argumento variable '%s' debe ir al final"
+  }
+};
+
+
 /**
  * Expose the root command.
  */
@@ -86,6 +125,7 @@ function Command(name) {
   this._allowUnknownOption = false;
   this._args = [];
   this._name = name || '';
+  this._locale = i18nDefaultLocale;
 }
 
 /**
@@ -93,6 +133,18 @@ function Command(name) {
  */
 
 Command.prototype.__proto__ = EventEmitter.prototype;
+
+
+Command.prototype.locale = function(locale) {
+  this._locale = locale;
+  return this;
+}
+
+Command.prototype.i18nMessage = function(key) {
+  var messages = i18nMessages[this._locale];
+  return (messages && messages[key]) || "??" + this.locale + "." + key + "??";
+}
+
 
 /**
  * Add command `name`.
@@ -194,7 +246,7 @@ Command.prototype.arguments = function (desc) {
  */
 
 Command.prototype.addImplicitHelpCommand = function() {
-  this.command('help [cmd]', 'display help for [cmd]');
+  this.command('help [cmd]', this.i18nMessage("help.implicitHelp"));
 };
 
 /**
@@ -554,9 +606,9 @@ Command.prototype.executeSubCommand = function(argv, args, unknown) {
   proc.on('close', process.exit.bind(process));
   proc.on('error', function(err) {
     if (err.code == "ENOENT") {
-      console.error('\n  %s(1) does not exist, try --help\n', bin);
+      console.error(this.i18nMessage("error.executeSubCommand.ENOENT"), bin);
     } else if (err.code == "EACCES") {
-      console.error('\n  %s(1) not executable. try chmod or run with root\n', bin);
+      console.error(this.i18nMessage("error.executeSubCommand.EACCESS"), bin);
     }
     process.exit(1);
   });
@@ -763,7 +815,7 @@ Command.prototype.opts = function() {
 
 Command.prototype.missingArgument = function(name) {
   console.error();
-  console.error("  error: missing required argument `%s'", name);
+  console.error("  " + this.i18nMessage("error.missingArgument"), name);
   console.error();
   process.exit(1);
 };
@@ -779,9 +831,9 @@ Command.prototype.missingArgument = function(name) {
 Command.prototype.optionMissingArgument = function(option, flag) {
   console.error();
   if (flag) {
-    console.error("  error: option `%s' argument missing, got `%s'", option.flags, flag);
+    console.error("  " + this.i18nMessage("error.optionMissingArgumentFlag"), option.flags, flag);
   } else {
-    console.error("  error: option `%s' argument missing", option.flags);
+    console.error("  " + this.i18nMessage("error.optionMissingArgument"), option.flags);
   }
   console.error();
   process.exit(1);
@@ -797,7 +849,7 @@ Command.prototype.optionMissingArgument = function(option, flag) {
 Command.prototype.unknownOption = function(flag) {
   if (this._allowUnknownOption) return;
   console.error();
-  console.error("  error: unknown option `%s'", flag);
+  console.error("  " + this.i18nMessage("error.unknownOption"), flag);
   console.error();
   process.exit(1);
 };
@@ -832,7 +884,7 @@ Command.prototype.version = function(str, flags) {
   if (0 == arguments.length) return this._version;
   this._version = str;
   flags = flags || '-V, --version';
-  this.option(flags, 'output the version number');
+  this.option(flags, this.i18nMessage("help.version"));
   this.on('version', function() {
     process.stdout.write(str + '\n');
     process.exit(0);
@@ -887,8 +939,8 @@ Command.prototype.usage = function(str) {
     return humanReadableArgName(arg);
   });
 
-  var usage = '[options]'
-    + (this.commands.length ? ' [command]' : '')
+  var usage = this.i18nMessage("help.usage.options")
+    + (this.commands.length ? ' ' + this.i18nMessage("help.usage.command") : '')
     + (this._args.length ? ' ' + args.join(' ') : '');
 
   if (0 == arguments.length) return this._usage || usage;
@@ -933,7 +985,7 @@ Command.prototype.optionHelp = function() {
   var width = this.largestOptionLength();
 
   // Prepend the help information
-  return [pad('-h, --help', width) + '  ' + 'output usage information']
+  return [pad('-h, --help', width) + '  ' + this.i18nMessage("help.optionHelp")]
       .concat(this.options.map(function(option) {
         return pad(option.flags, width) + '  ' + option.description;
       }))
@@ -960,7 +1012,7 @@ Command.prototype.commandHelp = function() {
     return [
       cmd._name
         + (cmd._alias ? '|' + cmd._alias : '')
-        + (cmd.options.length ? ' [options]' : '')
+      + (cmd.options.length ? ' ' + this.i18nMessage("help.usage.options") : '')
         + ' ' + args
       , cmd._description
     ];
@@ -972,7 +1024,7 @@ Command.prototype.commandHelp = function() {
 
   return [
     ''
-    , '  Commands:'
+    , '  ' + this.i18nMessage("help.usage.commandsSection") + ":"
     , ''
     , commands.map(function(cmd) {
       var desc = cmd[1] ? '  ' + cmd[1] : '';
@@ -1004,7 +1056,7 @@ Command.prototype.helpInformation = function() {
   }
   var usage = [
     ''
-    ,'  Usage: ' + cmdName + ' ' + this.usage()
+    ,'  ' + this.i18nMessage("help.usage") + ': ' + cmdName + ' ' + this.usage()
     , ''
   ];
 
@@ -1013,7 +1065,7 @@ Command.prototype.helpInformation = function() {
   if (commandHelp) cmds = [commandHelp];
 
   var options = [
-    '  Options:'
+    '  ' + this.i18nMessage("help.usage.optionsSection") + ':'
     , ''
     , '' + this.optionHelp().replace(/^/gm, '    ')
     , ''

@@ -1,3 +1,23 @@
+# Commander-i18n.js
+
+Just a fork of Commander.js (all the original README stuff can be found below)
+
+Intall it with `npm`:
+
+    npm install commander-i18n
+
+This little tweak adds support for i18n messages in the CLI output (just supporting english and spanish for the time being).
+By default it uses english. To use a different locale use the `locale` method:
+
+    var program = require("commander-i18n");
+
+    program.
+      locale("es")
+      option("-i", "--increible", "activar una opción increible);
+
+
+
+
 # Commander.js
 
 

@@ -1,5 +1,5 @@
 {
-  "name": "commander",
+  "name": "commander-i18n",
   "version": "2.9.0",
   "description": "the complete solution for node.js command-line programs",
   "keywords": [
@@ -8,11 +8,11 @@
     "option",
     "parser"
   ],
-  "author": "TJ Holowaychuk <tj@vision-media.ca>",
+  "author": "TJ Holowaychuk <tj@vision-media.ca>, Trabe <contact@trabe.io>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tj/commander.js.git"
+    "url": "https://github.com/trabe/commander-i18n.js.git"
   },
   "devDependencies": {
     "should": ">= 0.0.1 <9.0.0",
