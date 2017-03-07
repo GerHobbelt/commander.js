@@ -603,12 +603,13 @@ Command.prototype.executeSubCommand = function(argv, args, unknown) {
     proc = spawn(process.execPath, args, { stdio: 'inherit'});
   }
 
+  var that = this;
   proc.on('close', process.exit.bind(process));
   proc.on('error', function(err) {
     if (err.code == "ENOENT") {
-      console.error(this.i18nMessage("error.executeSubCommand.ENOENT"), bin);
+      console.error(that.i18nMessage("error.executeSubCommand.ENOENT"), bin);
     } else if (err.code == "EACCES") {
-      console.error(this.i18nMessage("error.executeSubCommand.EACCESS"), bin);
+      console.error(that.i18nMessage("error.executeSubCommand.EACCESS"), bin);
     }
     process.exit(1);
   });
