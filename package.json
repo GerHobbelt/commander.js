@@ -15,6 +15,7 @@
     "url": "https://github.com/tj/commander.js.git"
   },
   "scripts": {
+    "build": "make",
     "test": "make test && npm run test-typings",
     "test-typings": "node_modules/typescript/bin/tsc -p tsconfig.json"
   },
@@ -23,12 +24,12 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/node": "^7.0.39"
+    "@types/node": "^8.0.20"
   },
   "devDependencies": {
-    "should": "^11.2.1",
-    "sinon": "^2.3.5",
-    "typescript": "^2.4.1"
+    "should": "11.2.1",
+    "sinon": "3.1.0",
+    "typescript": "2.4.2"
   },
   "typings": "typings/index.d.ts"
 }
