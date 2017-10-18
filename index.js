@@ -155,7 +155,7 @@ Command.prototype.__proto__ = EventEmitter.prototype;
  */
 
 Command.prototype.command = function(name, desc, opts) {
-  if(typeof desc === 'object' && desc !== null){
+  if (typeof desc === 'object' && desc !== null) {
     opts = desc;
     desc = null;
   }
@@ -169,6 +169,7 @@ Command.prototype.command = function(name, desc, opts) {
     this._execs[cmd._name] = true;
     if (opts.isDefault) this.defaultExecutable = cmd._name;
   }
+
   cmd._noHelp = !!opts.noHelp;
   this.commands.push(cmd);
   cmd.parseExpectedArgs(args);
@@ -544,7 +545,7 @@ Command.prototype.executeSubCommand = function(argv, args, unknown) {
       // add executable arguments to spawn
       args = (process.execArgv || []).concat(args);
 
-      proc = spawn(process.argv[0], args, { stdio: 'inherit', customFds: [0, 1, 2] });
+      proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
     } else {
       proc = spawn(bin, args, { stdio: 'inherit', customFds: [0, 1, 2] });
     }
@@ -880,7 +881,9 @@ Command.prototype.alias = function(alias) {
 
   if (arguments.length === 0) return command._alias;
 
-  if (alias === command._name) throw new Error('Command alias can\'t be the same as its name');
+  if (alias === command._name) {
+    throw new Error('Command alias can\'t be the same as its name');
+  }
 
   command._alias = alias;
   return this;
