@@ -7,6 +7,7 @@ try {
   program
     .command('fail')
     .alias('fail');
+  error = 'no error';
 } catch (e) {
   error = e;
 }

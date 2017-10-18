@@ -4,7 +4,10 @@ var exec = require('child_process').exec
 
 
 
-var bin = path.join(__dirname, './fixtures/pm')
+var bin = path.join(__dirname, './fixtures/pm');
+if (process.platform === 'win32') {
+  bin = 'node ' + bin;
+}
 
 // success case
 exec(bin + ' help', function (error, stdout, stderr) {

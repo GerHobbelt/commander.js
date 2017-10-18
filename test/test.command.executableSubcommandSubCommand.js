@@ -10,7 +10,11 @@ var exec = require('child_process').exec
  * pm cache validate (default)
  */
 
-var bin = path.join(__dirname, './fixtures/pm')
+var bin = path.join(__dirname, './fixtures/pm');
+if (process.platform === 'win32') {
+  bin = 'node ' + bin;
+}
+
 // should list commands at top-level sub command
 exec(bin + ' cache help', function (error, stdout, stderr) {
   stdout.should.containEql('Usage:');
